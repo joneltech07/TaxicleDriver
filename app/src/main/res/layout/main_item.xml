@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="7dp"
+    android:elevation="7dp"
+    app:cardUseCompatPadding="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/baseline_person_24"
+            android:id="@+id/img1"
+            app:civ_border_width="2dp"
+            app:civ_border_color="#FF000000"/>
+        
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_location_name"
+            android:text="Location Name"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:layout_toRightOf="@+id/img1"
+            android:layout_marginLeft="10dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/passenger_name"
+            android:text="Name"
+            android:layout_toRightOf="@+id/img1"
+            android:layout_below="@+id/tv_location_name"
+            android:layout_marginLeft="10dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/notes"
+            android:text="notes"
+            android:layout_toRightOf="@+id/img1"
+            android:layout_below="@+id/passenger_name"
+            android:layout_marginLeft="10dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@+id/notes">
+            <Button
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:text="Accept"
+                android:textAllCaps="false"
+                android:layout_marginRight="5dp"
+                android:backgroundTint="#52DAD2"
+                android:id="@+id/btnAccept" />
+            <Button
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:text="Show Info"
+                android:textAllCaps="false"
+                android:layout_marginLeft="5dp"
+                android:id="@+id/btnInfo" />
+        </LinearLayout>
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

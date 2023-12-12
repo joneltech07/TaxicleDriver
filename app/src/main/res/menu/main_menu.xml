@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/account"
+            android:title="Account" />
+        <item android:id="@+id/booking"
+            android:title="Booking" />
+        <item android:id="@+id/advance_book"
+            android:title="Advance Booking" />
+        <item android:id="@+id/history"
+            android:title="History" />
+        <item
+            android:id="@+id/logout"
+            android:title="Log Out" />
+    </group>
+</menu>

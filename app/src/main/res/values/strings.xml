@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Taxicle - Driver</string>
+    <string name="mapbox_access_token">pk.eyJ1Ijoiamx0b2xlbnRpbm8iLCJhIjoiY2xvbm44OXBmMHp6ZzJxbnJzbTJhaW1lOSJ9.X1eL_-oB54t6wTFMYnMt3A</string>
+    <string name="open">Open Navigation Drawer</string>
+    <string name="close">Close Navigation Drawer</string>
+</resources>
