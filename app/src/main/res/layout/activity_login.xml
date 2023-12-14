@@ -36,7 +36,8 @@
             android:paddingLeft="20dp"
             android:textColor="#B3000000"
             android:textColorHint="#B3000000"
-            android:textSize="13dp" />
+            android:textSize="13dp"
+            android:inputType="textEmailAddress"/>
 
         <EditText
             android:id="@+id/et_password"
