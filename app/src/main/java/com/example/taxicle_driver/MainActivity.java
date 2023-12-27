@@ -47,6 +47,7 @@ import com.mapbox.android.gestures.MoveGestureDetector;
 import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.models.Bearing;
 import com.mapbox.api.directions.v5.models.RouteOptions;
+import com.mapbox.api.directions.v5.models.VoiceInstructions;
 import com.mapbox.bindgen.Expected;
 import com.mapbox.geojson.Point;
 import com.mapbox.maps.CameraOptions;
@@ -79,6 +80,7 @@ import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp;
 import com.mapbox.navigation.core.trip.session.LocationMatcherResult;
 import com.mapbox.navigation.core.trip.session.LocationObserver;
 import com.mapbox.navigation.core.trip.session.RouteProgressObserver;
+import com.mapbox.navigation.core.trip.session.VoiceInstructionsObserver;
 import com.mapbox.navigation.ui.base.util.MapboxNavigationConsumer;
 import com.mapbox.navigation.ui.maneuver.api.MapboxManeuverApi;
 import com.mapbox.navigation.ui.maneuver.model.Maneuver;
@@ -94,9 +96,17 @@ import com.mapbox.navigation.ui.maps.route.line.model.MapboxRouteLineOptions;
 import com.mapbox.navigation.ui.maps.route.line.model.RouteLineError;
 import com.mapbox.navigation.ui.maps.route.line.model.RouteLineResources;
 import com.mapbox.navigation.ui.maps.route.line.model.RouteSetValue;
+import com.mapbox.navigation.ui.voice.api.MapboxSpeechApi;
+import com.mapbox.navigation.ui.voice.api.MapboxVoiceInstructionsPlayer;
+import com.mapbox.navigation.ui.voice.model.SpeechAnnouncement;
+import com.mapbox.navigation.ui.voice.model.SpeechError;
+import com.mapbox.navigation.ui.voice.model.SpeechValue;
+import com.mapbox.navigation.ui.voice.model.SpeechVolume;
+import com.mapbox.navigation.ui.voice.view.MapboxSoundButton;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import kotlin.Unit;
@@ -107,19 +117,29 @@ public class MainActivity extends AppCompatActivity {
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
 
+
+
+
+
+
 //    Firebase
     FirebaseAuth auth;
     FirebaseUser user;
 
 
 
-//    Fet ROutes
-MapView mapView;
+
+
+//    Fetch Routes
+    MapView mapView;
     MaterialButton setRoute;
     FloatingActionButton focusLocationBtn;
     private final NavigationLocationProvider navigationLocationProvider = new NavigationLocationProvider();
     private MapboxRouteLineView routeLineView;
     private MapboxRouteLineApi routeLineApi;
+
+
+
 
     private MapboxManeuverView maneuverView;
     private MapboxManeuverApi maneuverApi;
@@ -133,25 +153,22 @@ MapView mapView;
                 arrowView.renderManeuverUpdate(style, routeArrowApi.addUpcomingManeuverArrow(routeProgress));
             }
 
-            maneuverApi.getManeuvers(routeProgress).fold(new Expected.Transformer<ManeuverError, Object>() {
-
-                @NonNull
-                @Override
-                public Object invoke(@NonNull ManeuverError input) {
-                    Toast.makeText(MainActivity.this, "There was and error", Toast.LENGTH_SHORT).show();
-                    return new Object();
-                }
-            }, new Expected.Transformer<List<Maneuver>, Object>() {
-                @NonNull
-                @Override
-                public Object invoke(@NonNull List<Maneuver> input) {
-                    maneuverView.setVisibility(View.VISIBLE);
-                    maneuverView.renderManeuvers(maneuverApi.getManeuvers(routeProgress));
-                    return new Object();
-                }
+            maneuverApi.getManeuvers(routeProgress).fold(input -> {
+                Toast.makeText(MainActivity.this, "There was and error", Toast.LENGTH_SHORT).show();
+                return new Object();
+            }, input -> {
+                maneuverView.setVisibility(View.VISIBLE);
+                maneuverView.renderManeuvers(maneuverApi.getManeuvers(routeProgress));
+                return new Object();
             });
         }
     };
+
+
+
+
+
+
     private final LocationObserver locationObserver = new LocationObserver() {
         @Override
         public void onNewRawLocation(@NonNull Location location) {
@@ -216,6 +233,46 @@ MapView mapView;
             }
         }
     });
+
+
+
+
+    private MapboxSpeechApi speechApi;
+    private MapboxVoiceInstructionsPlayer mapboxVoiceInstructionsPlayer;
+    private MapboxNavigationConsumer<Expected<SpeechError, SpeechValue>> speechCallback = new MapboxNavigationConsumer<Expected<SpeechError, SpeechValue>>() {
+        @Override
+        public void accept(Expected<SpeechError, SpeechValue> speechErrorSpeechValueExpected) {
+            speechErrorSpeechValueExpected.fold(input -> {
+                mapboxVoiceInstructionsPlayer.play(input.getFallback(), voiceInstructionsPlayerCallback);
+                return Unit.INSTANCE;
+            }, (Expected.Transformer<SpeechValue, Object>) input -> {
+                mapboxVoiceInstructionsPlayer.play(input.getAnnouncement(), voiceInstructionsPlayerCallback);
+                return Unit.INSTANCE;
+            });
+        }
+    };
+
+
+
+
+    private MapboxNavigationConsumer<SpeechAnnouncement> voiceInstructionsPlayerCallback = new MapboxNavigationConsumer<SpeechAnnouncement>() {
+        @Override
+        public void accept(SpeechAnnouncement speechAnnouncement) {
+            speechApi.clean(speechAnnouncement);
+        }
+    };
+
+    VoiceInstructionsObserver voiceInstructionsObserver = new VoiceInstructionsObserver() {
+        @Override
+        public void onNewVoiceInstructions(@NonNull VoiceInstructions voiceInstructions) {
+            speechApi.generate(voiceInstructions, speechCallback);
+        }
+    };
+
+    private boolean isVoiceInstructionsMuted = false;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -292,6 +349,9 @@ MapView mapView;
 
 
 
+
+
+
             maneuverView = findViewById(R.id.maneuverView);
 
             maneuverApi = new MapboxManeuverApi(
@@ -312,6 +372,9 @@ MapView mapView;
             routeLineView = new MapboxRouteLineView(options);
             routeLineApi = new MapboxRouteLineApi(options);
 
+            speechApi = new MapboxSpeechApi(MainActivity.this, getString(R.string.mapbox_access_token), Locale.US.toLanguageTag());
+            mapboxVoiceInstructionsPlayer = new MapboxVoiceInstructionsPlayer(MainActivity.this, Locale.US.toLanguageTag());
+
             NavigationOptions navigationOptions = new NavigationOptions.Builder(this).accessToken(getString(R.string.mapbox_access_token)).build();
 
             MapboxNavigationApp.setup(navigationOptions);
@@ -319,7 +382,21 @@ MapView mapView;
 
             mapboxNavigation.registerRoutesObserver(routesObserver);
             mapboxNavigation.registerLocationObserver(locationObserver);
+            mapboxNavigation.registerVoiceInstructionsObserver(voiceInstructionsObserver);
             mapboxNavigation.registerRouteProgressObserver(routeProgressObserver);
+
+
+            MapboxSoundButton soundButton = findViewById(R.id.soundButton);
+            soundButton.setOnClickListener(v -> {
+                isVoiceInstructionsMuted = !isVoiceInstructionsMuted;
+                if (isVoiceInstructionsMuted) {
+                    soundButton.muteAndExtend(1500L);
+                    mapboxVoiceInstructionsPlayer.volume(new SpeechVolume(0f));
+                } else {
+                    soundButton.unmuteAndExtend(1500L);
+                    mapboxVoiceInstructionsPlayer.volume(new SpeechVolume(1f));
+                }
+            });
 
 
 
@@ -361,7 +438,7 @@ MapView mapView;
 
 
 
-            mapView.getMapboxMap().loadStyleUri(Style.SATELLITE, style -> {
+            mapView.getMapboxMap().loadStyleUri("mapbox://styles/jltolentino/clqnwape8002g01rc5hez01w7", style -> {
                 mapView.getMapboxMap().setCamera(new CameraOptions.Builder().zoom(20.0).build());
                 locationComponentPlugin.setEnabled(true);
                 locationComponentPlugin.setLocationProvider(navigationLocationProvider);
