@@ -64,19 +64,30 @@ import com.mapbox.maps.plugin.gestures.OnMapClickListener;
 import com.mapbox.maps.plugin.gestures.OnMoveListener;
 import com.mapbox.maps.plugin.locationcomponent.LocationComponentPlugin;
 import com.mapbox.maps.plugin.locationcomponent.generated.LocationComponentSettings;
+import com.mapbox.navigation.base.formatter.DistanceFormatterOptions;
 import com.mapbox.navigation.base.options.NavigationOptions;
 import com.mapbox.navigation.base.route.NavigationRoute;
 import com.mapbox.navigation.base.route.NavigationRouterCallback;
 import com.mapbox.navigation.base.route.RouterFailure;
 import com.mapbox.navigation.base.route.RouterOrigin;
+import com.mapbox.navigation.base.trip.model.RouteProgress;
 import com.mapbox.navigation.core.MapboxNavigation;
 import com.mapbox.navigation.core.directions.session.RoutesObserver;
 import com.mapbox.navigation.core.directions.session.RoutesUpdatedResult;
+import com.mapbox.navigation.core.formatter.MapboxDistanceFormatter;
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp;
 import com.mapbox.navigation.core.trip.session.LocationMatcherResult;
 import com.mapbox.navigation.core.trip.session.LocationObserver;
+import com.mapbox.navigation.core.trip.session.RouteProgressObserver;
 import com.mapbox.navigation.ui.base.util.MapboxNavigationConsumer;
+import com.mapbox.navigation.ui.maneuver.api.MapboxManeuverApi;
+import com.mapbox.navigation.ui.maneuver.model.Maneuver;
+import com.mapbox.navigation.ui.maneuver.model.ManeuverError;
+import com.mapbox.navigation.ui.maneuver.view.MapboxManeuverView;
 import com.mapbox.navigation.ui.maps.location.NavigationLocationProvider;
+import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowApi;
+import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowView;
+import com.mapbox.navigation.ui.maps.route.arrow.model.RouteArrowOptions;
 import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineApi;
 import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineView;
 import com.mapbox.navigation.ui.maps.route.line.model.MapboxRouteLineOptions;
@@ -109,6 +120,38 @@ MapView mapView;
     private final NavigationLocationProvider navigationLocationProvider = new NavigationLocationProvider();
     private MapboxRouteLineView routeLineView;
     private MapboxRouteLineApi routeLineApi;
+
+    private MapboxManeuverView maneuverView;
+    private MapboxManeuverApi maneuverApi;
+    private MapboxRouteArrowView arrowView;
+    private MapboxRouteArrowApi routeArrowApi = new MapboxRouteArrowApi();
+    private RouteProgressObserver routeProgressObserver = new RouteProgressObserver() {
+        @Override
+        public void onRouteProgressChanged(@NonNull RouteProgress routeProgress) {
+            Style style = mapView.getMapboxMap().getStyle();
+            if (style != null) {
+                arrowView.renderManeuverUpdate(style, routeArrowApi.addUpcomingManeuverArrow(routeProgress));
+            }
+
+            maneuverApi.getManeuvers(routeProgress).fold(new Expected.Transformer<ManeuverError, Object>() {
+
+                @NonNull
+                @Override
+                public Object invoke(@NonNull ManeuverError input) {
+                    Toast.makeText(MainActivity.this, "There was and error", Toast.LENGTH_SHORT).show();
+                    return new Object();
+                }
+            }, new Expected.Transformer<List<Maneuver>, Object>() {
+                @NonNull
+                @Override
+                public Object invoke(@NonNull List<Maneuver> input) {
+                    maneuverView.setVisibility(View.VISIBLE);
+                    maneuverView.renderManeuvers(maneuverApi.getManeuvers(routeProgress));
+                    return new Object();
+                }
+            });
+        }
+    };
     private final LocationObserver locationObserver = new LocationObserver() {
         @Override
         public void onNewRawLocation(@NonNull Location location) {
@@ -183,6 +226,11 @@ MapView mapView;
             auth = FirebaseAuth.getInstance();
             user = auth.getCurrentUser();
 
+
+
+
+
+
             drawerLayout = findViewById(R.id.drawer_layout);
             navigationView = findViewById(R.id.nav_view);
             drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -201,6 +249,10 @@ MapView mapView;
                 }
                 return false;
             });
+
+
+
+
 
 
 //      Set profile info Header
@@ -229,9 +281,31 @@ MapView mapView;
             });
 
 
+
+
+
+
+
             mapView = findViewById(R.id.mapview);
             focusLocationBtn = findViewById(R.id.focusLocation);
             setRoute = findViewById(R.id.setRoute);
+
+
+
+            maneuverView = findViewById(R.id.maneuverView);
+
+            maneuverApi = new MapboxManeuverApi(
+                    new MapboxDistanceFormatter(
+                            new DistanceFormatterOptions.Builder(MainActivity.this).build()
+                    )
+            );
+            arrowView = new MapboxRouteArrowView(
+                    new RouteArrowOptions.Builder(MainActivity.this).build()
+            );
+
+
+
+
 
             MapboxRouteLineOptions options = new MapboxRouteLineOptions.Builder(this).withRouteLineResources(new RouteLineResources.Builder().build())
                     .withRouteLineBelowLayerId("road-label-navigation").build();
@@ -245,6 +319,13 @@ MapView mapView;
 
             mapboxNavigation.registerRoutesObserver(routesObserver);
             mapboxNavigation.registerLocationObserver(locationObserver);
+            mapboxNavigation.registerRouteProgressObserver(routeProgressObserver);
+
+
+
+
+
+
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -260,6 +341,11 @@ MapView mapView;
                 mapboxNavigation.startTripSession();
             }
 
+
+
+
+
+
             focusLocationBtn.hide();
             LocationComponentPlugin locationComponentPlugin = getLocationComponent(mapView);
             getGestures(mapView).addOnMoveListener(onMoveListener);
@@ -268,6 +354,12 @@ MapView mapView;
 //            Toast.makeText(this, "Please select a location in map", Toast.LENGTH_SHORT).show();
                 fetchRoute();
             });
+
+
+
+
+
+
 
             mapView.getMapboxMap().loadStyleUri(Style.SATELLITE, style -> {
                 mapView.getMapboxMap().setCamera(new CameraOptions.Builder().zoom(20.0).build());
@@ -299,9 +391,11 @@ MapView mapView;
                     focusLocationBtn.hide();
                 });
             });
+
         }catch (Exception e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+
     }
 
     @SuppressLint("MissingPermission")

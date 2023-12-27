@@ -17,9 +17,6 @@
         android:theme="@style/Theme.TaxicleDriver"
         tools:targetApi="31">
         <activity
-            android:name=".MapRoutesActivity"
-            android:exported="false" />
-        <activity
             android:name=".Book"
             android:exported="false" />
         <activity
