@@ -64,7 +64,6 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 import com.mapbox.maps.plugin.gestures.OnMapClickListener;
 import com.mapbox.maps.plugin.gestures.OnMoveListener;
 import com.mapbox.maps.plugin.locationcomponent.LocationComponentPlugin;
-import com.mapbox.maps.plugin.locationcomponent.generated.LocationComponentSettings;
 import com.mapbox.navigation.base.formatter.DistanceFormatterOptions;
 import com.mapbox.navigation.base.options.NavigationOptions;
 import com.mapbox.navigation.base.route.NavigationRoute;
@@ -83,8 +82,6 @@ import com.mapbox.navigation.core.trip.session.RouteProgressObserver;
 import com.mapbox.navigation.core.trip.session.VoiceInstructionsObserver;
 import com.mapbox.navigation.ui.base.util.MapboxNavigationConsumer;
 import com.mapbox.navigation.ui.maneuver.api.MapboxManeuverApi;
-import com.mapbox.navigation.ui.maneuver.model.Maneuver;
-import com.mapbox.navigation.ui.maneuver.model.ManeuverError;
 import com.mapbox.navigation.ui.maneuver.view.MapboxManeuverView;
 import com.mapbox.navigation.ui.maps.location.NavigationLocationProvider;
 import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowApi;
@@ -110,7 +107,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 
 public class MainActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
@@ -133,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
 //    Fetch Routes
     MapView mapView;
     MaterialButton setRoute;
-    FloatingActionButton focusLocationBtn;
+    FloatingActionButton focusLocationBtn, navigate;
     private final NavigationLocationProvider navigationLocationProvider = new NavigationLocationProvider();
     private MapboxRouteLineView routeLineView;
     private MapboxRouteLineApi routeLineApi;
@@ -345,7 +341,9 @@ public class MainActivity extends AppCompatActivity {
 
             mapView = findViewById(R.id.mapview);
             focusLocationBtn = findViewById(R.id.focusLocation);
-            setRoute = findViewById(R.id.setRoute);
+            navigate = findViewById(R.id.navigate);
+            setRoute = findViewById(R.id.stopRoute);
+
 
 
 
@@ -427,7 +425,7 @@ public class MainActivity extends AppCompatActivity {
             LocationComponentPlugin locationComponentPlugin = getLocationComponent(mapView);
             getGestures(mapView).addOnMoveListener(onMoveListener);
 
-            setRoute.setOnClickListener(v -> {
+            navigate.setOnClickListener(v -> {
 //            Toast.makeText(this, "Please select a location in map", Toast.LENGTH_SHORT).show();
                 fetchRoute();
             });
@@ -482,8 +480,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LocationEngineResult result) {
                 Location location = result.getLastLocation();
-                setRoute.setEnabled(false);
-                setRoute.setText("Fetching route...");
+                navigate.setEnabled(false);
                 RouteOptions.Builder builder = RouteOptions.builder();
                 Point origin = Point.fromLngLat(Objects.requireNonNull(location).getLongitude(), location.getLatitude());
 
@@ -499,14 +496,16 @@ public class MainActivity extends AppCompatActivity {
                     public void onRoutesReady(@NonNull List<NavigationRoute> list, @NonNull RouterOrigin routerOrigin) {
                         mapboxNavigation.setNavigationRoutes(list);
                         focusLocationBtn.performClick();
-                        setRoute.setEnabled(true);
-                        setRoute.setText("Set route");
+                        navigate.setEnabled(true);
+//                        setRoute.setEnabled(true);
+//                        setRoute.setText("Set route");
                     }
 
                     @Override
                     public void onFailure(@NonNull List<RouterFailure> list, @NonNull RouteOptions routeOptions) {
-                        setRoute.setEnabled(true);
-                        setRoute.setText("Set route");
+                        navigate.setEnabled(true);
+//                        setRoute.setEnabled(true);
+//                        setRoute.setText("Set route");
                         Toast.makeText(MainActivity.this, "Route request failed", Toast.LENGTH_SHORT).show();
                     }
 

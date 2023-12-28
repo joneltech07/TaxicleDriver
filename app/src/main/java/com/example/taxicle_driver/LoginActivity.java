@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
         View view = getWindow().getDecorView();
         makeViewFullScreen(view);
 
-        findViewById(R.id.tv_signup).setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
+        findViewById(R.id.tv_signup).setOnClickListener(v -> startActivity(new Intent(this, HomeActivity.class)));
 
         mAuth = FirebaseAuth.getInstance();
         editTextEmail = findViewById(R.id.et_email);
@@ -77,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
             startActivity(intent);
             finish();
         }

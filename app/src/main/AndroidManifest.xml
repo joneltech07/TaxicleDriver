@@ -17,6 +17,9 @@
         android:theme="@style/Theme.TaxicleDriver"
         tools:targetApi="31">
         <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
             android:name=".Book"
             android:exported="false" />
         <activity
@@ -30,7 +33,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
 
         <meta-data
             android:name="preloaded_fonts"
