@@ -25,6 +25,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -129,7 +130,13 @@ public class MainActivity extends AppCompatActivity {
 //    Fetch Routes
     MapView mapView;
     MaterialButton setRoute;
-    FloatingActionButton focusLocationBtn, navigate;
+    ImageButton focusLocationBtn, navigate;
+
+
+
+
+
+
     private final NavigationLocationProvider navigationLocationProvider = new NavigationLocationProvider();
     private MapboxRouteLineView routeLineView;
     private MapboxRouteLineApi routeLineApi;
@@ -208,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         public void onMoveBegin(@NonNull MoveGestureDetector moveGestureDetector) {
             focusLocation = false;
             getGestures(mapView).removeOnMoveListener(this);
-            focusLocationBtn.show();
+            focusLocationBtn.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -421,7 +428,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            focusLocationBtn.hide();
+            focusLocationBtn.setVisibility(View.GONE);
             LocationComponentPlugin locationComponentPlugin = getLocationComponent(mapView);
             getGestures(mapView).addOnMoveListener(onMoveListener);
 
@@ -436,7 +443,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            mapView.getMapboxMap().loadStyleUri("mapbox://styles/jltolentino/clqnwape8002g01rc5hez01w7", style -> {
+            mapView.getMapboxMap().loadStyleUri("mapbox://styles/jltolentino/clpxx8g5j00jr01re4o8x833g", style -> {
                 mapView.getMapboxMap().setCamera(new CameraOptions.Builder().zoom(20.0).build());
                 locationComponentPlugin.setEnabled(true);
                 locationComponentPlugin.setLocationProvider(navigationLocationProvider);
@@ -463,7 +470,7 @@ public class MainActivity extends AppCompatActivity {
                 focusLocationBtn.setOnClickListener(view -> {
                     focusLocation = true;
                     getGestures(mapView).addOnMoveListener(onMoveListener);
-                    focusLocationBtn.hide();
+                    focusLocationBtn.setVisibility(View.GONE);
                 });
             });
 

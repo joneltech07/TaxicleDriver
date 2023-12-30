@@ -1,9 +1,7 @@
 package com.example.taxicle_driver;
 
-import static com.mapbox.maps.plugin.gestures.GesturesUtils.addOnMapClickListener;
 import static com.mapbox.maps.plugin.gestures.GesturesUtils.getGestures;
 import static com.mapbox.maps.plugin.locationcomponent.LocationComponentUtils.getLocationComponent;
-import static com.mapbox.turf.TurfConstants.UNIT_METERS;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -13,21 +11,27 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.content.Intent;
+import android.app.Dialog;
 import android.content.pm.PackageManager;
-import android.location.Address;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.taxicle_driver.adapter.BookingPassengerAdapter;
 import com.example.taxicle_driver.constructor.AvailableDriver;
+import com.example.taxicle_driver.constructor.Booking;
+import com.example.taxicle_driver.constructor.BookingPassenger;
 import com.example.taxicle_driver.constructor.Driver;
-import com.google.android.material.button.MaterialButton;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -44,19 +48,16 @@ import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor;
 import com.mapbox.maps.plugin.LocationPuck2D;
+import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 import com.mapbox.maps.plugin.gestures.OnMoveListener;
 import com.mapbox.maps.plugin.locationcomponent.LocationComponentPlugin;
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener;
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener;
-import com.mapbox.search.autocomplete.PlaceAutocompleteSuggestion;
-import com.mapbox.search.ui.adapter.autocomplete.PlaceAutocompleteUiAdapter;
-import com.mapbox.turf.TurfConstants;
-import com.mapbox.turf.TurfMeasurement;
 
-import java.text.NumberFormat;
-import java.util.List;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -149,7 +150,7 @@ public class HomeActivity extends AppCompatActivity {
                 getLocationComponent(mapView).removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener);
                 getLocationComponent(mapView).removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);
                 getGestures(mapView).removeOnMoveListener(onMoveListener);
-                floatingActionButton.show();
+                floatingActionButton.setVisibility(View.VISIBLE);
             } catch (Exception e) {
                 Toast.makeText(HomeActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -176,7 +177,16 @@ public class HomeActivity extends AppCompatActivity {
 
 //    Map Vview
     private MapView mapView;
-    FloatingActionButton floatingActionButton;
+    ImageButton floatingActionButton, showPassenger;
+
+
+
+
+
+
+
+
+    BookingPassengerAdapter adapter;
 
 
 
@@ -279,6 +289,7 @@ public class HomeActivity extends AppCompatActivity {
 
         mapView = findViewById(R.id.mapview);
         floatingActionButton = findViewById(R.id.focusLocation);
+        showPassenger = findViewById(R.id.show_passengers);
 
 
 
@@ -303,8 +314,18 @@ public class HomeActivity extends AppCompatActivity {
                 locationComponentPlugin.addOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener);
                 locationComponentPlugin.addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);
                 getGestures(mapView).addOnMoveListener(onMoveListener);
-                floatingActionButton.hide();
+                floatingActionButton.setVisibility(View.GONE);
             });
+
+
+
+
+
+            showPassenger.setOnClickListener(v -> showBookingPassengers());
+
+
+
+
 
 
 
@@ -312,17 +333,131 @@ public class HomeActivity extends AppCompatActivity {
 //      Switch Button
             switchMaterial.setOnClickListener(v -> {
                 if (switchMaterial.isChecked()) {
-                    switchMaterial.setText("Available");
                     setToAvailable();
+                    showBookingPassengers();
                     Toast.makeText(HomeActivity.this, "Set Status to Available", Toast.LENGTH_SHORT).show();
                 } else {
-                    switchMaterial.setText("Not Available");
                     setToUnAvailable();
                     Toast.makeText(HomeActivity.this, "Set Status to UnAvailable", Toast.LENGTH_SHORT).show();
                 }
             });
 
         });
+
+
+
+
+
+
+
+        switchMaterialState();
+
+
+
+    }
+
+
+
+
+
+    private void switchMaterialState() {
+        FirebaseDatabase.getInstance().getReference(AvailableDriver.class.getSimpleName())
+                .child(user.getUid()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        switchMaterial.setChecked(snapshot.exists());
+                       if (snapshot.exists()) {
+                           switchMaterial.setText("Available");
+
+                       } else {
+                           switchMaterial.setText("Not Available");
+
+                       }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
+
+
+
+
+
+
+
+
+    private void showBookingPassengers() {
+        try {
+            // Inflate the bottom dialog layout
+            View dialogView = LayoutInflater.from(this).inflate(R.layout.passenger_booking, null);
+
+            // Create a dialog without a title
+            Dialog bottomDialog = new Dialog(this);
+            bottomDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            bottomDialog.setCancelable(false);
+            bottomDialog.setContentView(dialogView);
+
+            // Set the dialog to appear at the bottom of the screen
+            Window window = bottomDialog.getWindow();
+            if (window != null) {
+                window.setGravity(android.view.Gravity.BOTTOM);
+                window.setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+
+
+            RecyclerView recyclerView = bottomDialog.findViewById(R.id.rv);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
+            FirebaseRecyclerOptions<BookingPassenger> options =
+                    new FirebaseRecyclerOptions.Builder<BookingPassenger>()
+                            .setQuery(
+                                    FirebaseDatabase.getInstance().getReference(AvailableDriver.class.getSimpleName()).child(user.getUid()).child("passengers"), BookingPassenger.class
+                            )
+                            .build();
+            adapter = new BookingPassengerAdapter(options, HomeActivity.this.point);
+            recyclerView.setAdapter(adapter);
+            adapter.startListening();
+
+
+            bottomDialog.findViewById(R.id.ib_close).setOnClickListener(v -> {
+                bottomDialog.dismiss();
+            });
+
+
+//            Check if Passenger Booking exists
+            FirebaseDatabase.getInstance().getReference(AvailableDriver.class.getSimpleName())
+                    .child(user.getUid()).child("passengers").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                showPassenger.setVisibility(View.VISIBLE);
+                                bottomDialog.show();
+                            } else {
+                                showPassenger.setVisibility(View.GONE);
+                                bottomDialog.dismiss();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+        } catch (Exception e) {
+            TextView tvErr = findViewById(R.id.tv_error);
+            tvErr.setVisibility(View.VISIBLE);
+            tvErr.setText(e.getMessage());
+        }
+
+
+
+
     }
 
 
@@ -334,11 +469,13 @@ public class HomeActivity extends AppCompatActivity {
     private void setToAvailable() {
         try {
             reference = FirebaseDatabase.getInstance().getReference(AvailableDriver.class.getSimpleName());
-            availableDriver = new AvailableDriver();
-            availableDriver.setId(user.getUid());
-            availableDriver.setLongitude(point.longitude());
-            availableDriver.setLatitude(point.latitude());
-            reference.child(user.getUid()).setValue(availableDriver);
+
+            HashMap hashMap = new HashMap<String, Object>();
+            hashMap.put("id", user.getUid());
+            hashMap.put("latitude", point.latitude());
+            hashMap.put("longitude", point.longitude());
+
+            reference.child(user.getUid()).updateChildren(hashMap);
         } catch (Exception e) {
             Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_LONG).show();
         }
@@ -351,7 +488,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private void setToUnAvailable() {
-        reference.removeValue();
+        reference.child(user.getUid()).removeValue();
         reference = null;
     }
 }

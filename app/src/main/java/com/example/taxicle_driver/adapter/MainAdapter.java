@@ -69,13 +69,13 @@ public class MainAdapter extends FirebaseRecyclerAdapter<Booking, MainAdapter.my
         }
 
         holder.notes.setText(model.getNotes());
-        holder.location.setText(model.getLocationName());
+//        holder.location.setText(model.getLocationName());
 
         holder.btnAccept.setOnClickListener(view -> {
             try {
                 Intent intent = new Intent(view.getContext(), MainActivity.class);
-                intent.putExtra("long", model.getLongitude());
-                intent.putExtra("lat", model.getLatitude());
+//                intent.putExtra("long", model.getLongitude());
+//                intent.putExtra("lat", model.getLatitude());
                 view.getContext().startActivity(intent);
             } catch (Exception e) {
                 Toast.makeText(holder.name.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
