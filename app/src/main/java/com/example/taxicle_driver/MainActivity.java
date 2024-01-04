@@ -1,7 +1,6 @@
 package com.example.taxicle_driver;
 
 import static com.mapbox.maps.plugin.animation.CameraAnimationsUtils.getCamera;
-import static com.mapbox.maps.plugin.gestures.GesturesUtils.addOnMapClickListener;
 import static com.mapbox.maps.plugin.gestures.GesturesUtils.getGestures;
 import static com.mapbox.maps.plugin.locationcomponent.LocationComponentUtils.getLocationComponent;
 import static com.mapbox.navigation.base.extensions.RouteOptionsExtensions.applyDefaultNavigationOptions;
@@ -19,8 +18,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,9 +26,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.taxicle_driver.constructor.Booking;
 import com.example.taxicle_driver.constructor.Driver;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -55,14 +52,7 @@ import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.EdgeInsets;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.Style;
-import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor;
 import com.mapbox.maps.plugin.animation.MapAnimationOptions;
-import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
-import com.mapbox.maps.plugin.annotation.AnnotationPluginImplKt;
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManagerKt;
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
-import com.mapbox.maps.plugin.gestures.OnMapClickListener;
 import com.mapbox.maps.plugin.gestures.OnMoveListener;
 import com.mapbox.maps.plugin.locationcomponent.LocationComponentPlugin;
 import com.mapbox.navigation.base.formatter.DistanceFormatterOptions;
@@ -103,6 +93,7 @@ import com.mapbox.navigation.ui.voice.model.SpeechVolume;
 import com.mapbox.navigation.ui.voice.view.MapboxSoundButton;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -129,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
 //    Fetch Routes
     MapView mapView;
-    MaterialButton setRoute;
+    MaterialButton btnArrivedPickUp, btnArrivedDropOff;
     ImageButton focusLocationBtn, navigate;
 
 
@@ -272,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private boolean isVoiceInstructionsMuted = false;
+    private boolean isVoiceInstructionsMuted = false, isGoDropOff = false;
 
 
 
@@ -349,7 +340,8 @@ public class MainActivity extends AppCompatActivity {
             mapView = findViewById(R.id.mapview);
             focusLocationBtn = findViewById(R.id.focusLocation);
             navigate = findViewById(R.id.navigate);
-            setRoute = findViewById(R.id.stopRoute);
+            btnArrivedPickUp = findViewById(R.id.btn_arrived_pickup);
+            btnArrivedDropOff = findViewById(R.id.btn_arrived_dropoff);
 
 
 
@@ -433,8 +425,15 @@ public class MainActivity extends AppCompatActivity {
             getGestures(mapView).addOnMoveListener(onMoveListener);
 
             navigate.setOnClickListener(v -> {
-//            Toast.makeText(this, "Please select a location in map", Toast.LENGTH_SHORT).show();
-                fetchRoute();
+                Point passengerPoint = Point.fromLngLat(getIntent().getDoubleExtra("long", 0.0), getIntent().getDoubleExtra("lat", 0.0));
+                if (isGoDropOff) {
+                    passengerPoint = Point.fromLngLat(
+                            getIntent().getDoubleExtra("dropLong", 0.0),
+                            getIntent().getDoubleExtra("dropLat", 0.0)
+                    );
+                }
+
+                fetchRoute(passengerPoint);
             });
 
 
@@ -454,23 +453,30 @@ public class MainActivity extends AppCompatActivity {
                     return null;
                 });
 
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.location_pin);
-                AnnotationPlugin annotationPlugin = AnnotationPluginImplKt.getAnnotations(mapView);
-                PointAnnotationManager pointAnnotationManager = PointAnnotationManagerKt.createPointAnnotationManager(annotationPlugin, mapView);
-                addOnMapClickListener(mapView.getMapboxMap(), new OnMapClickListener() {
-                    @Override
-                    public boolean onMapClick(@NonNull Point point) {
-                        pointAnnotationManager.deleteAll();
-                        PointAnnotationOptions pointAnnotationOptions = new PointAnnotationOptions().withTextAnchor(TextAnchor.CENTER).withIconImage(bitmap)
-                                .withPoint(point);
-                        pointAnnotationManager.create(pointAnnotationOptions);
-                        return true;
-                    }
-                });
+
                 focusLocationBtn.setOnClickListener(view -> {
                     focusLocation = true;
                     getGestures(mapView).addOnMoveListener(onMoveListener);
                     focusLocationBtn.setVisibility(View.GONE);
+                });
+
+
+                btnArrivedPickUp.setOnClickListener(v -> {
+                    isGoDropOff = true;
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("isDriverHere", true);
+
+                    FirebaseDatabase.getInstance().getReference(Booking.class.getSimpleName())
+                            .child(Objects.requireNonNull(getIntent().getStringExtra("passId")))
+                            .updateChildren(hashMap);
+
+                    btnArrivedDropOff.setVisibility(View.VISIBLE);
+                    maneuverView.setVisibility(View.GONE);
+                    navigate.setEnabled(false);
+                });
+
+                btnArrivedDropOff.setOnClickListener(v -> {
+                    btnArrivedPickUp.setVisibility(View.GONE);
                 });
             });
 
@@ -480,8 +486,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
+
+
+
+
     @SuppressLint("MissingPermission")
-    private void fetchRoute() {
+    private void fetchRoute(Point point) {
         LocationEngine locationEngine = LocationEngineProvider.getBestLocationEngine(MainActivity.this);
         locationEngine.getLastLocation(new LocationEngineCallback<LocationEngineResult>() {
             @Override
@@ -491,8 +503,8 @@ public class MainActivity extends AppCompatActivity {
                 RouteOptions.Builder builder = RouteOptions.builder();
                 Point origin = Point.fromLngLat(Objects.requireNonNull(location).getLongitude(), location.getLatitude());
 
-                Point passengerPoint = Point.fromLngLat(getIntent().getDoubleExtra("long", 0.0), getIntent().getDoubleExtra("lat", 0.0));
-                builder.coordinatesList(Arrays.asList(origin, passengerPoint));
+
+                builder.coordinatesList(Arrays.asList(origin, point));
                 builder.alternatives(false);
                 builder.profile(DirectionsCriteria.PROFILE_DRIVING);
                 builder.bearingsList(Arrays.asList(Bearing.builder().angle(location.getBearing()).degrees(45.0).build(), null));
@@ -504,15 +516,11 @@ public class MainActivity extends AppCompatActivity {
                         mapboxNavigation.setNavigationRoutes(list);
                         focusLocationBtn.performClick();
                         navigate.setEnabled(true);
-//                        setRoute.setEnabled(true);
-//                        setRoute.setText("Set route");
                     }
 
                     @Override
                     public void onFailure(@NonNull List<RouterFailure> list, @NonNull RouteOptions routeOptions) {
                         navigate.setEnabled(true);
-//                        setRoute.setEnabled(true);
-//                        setRoute.setText("Set route");
                         Toast.makeText(MainActivity.this, "Route request failed", Toast.LENGTH_SHORT).show();
                     }
 

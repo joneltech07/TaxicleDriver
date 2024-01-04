@@ -36,18 +36,33 @@
 
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/stopRoute"
+            android:id="@+id/btn_arrived_pickup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="20sp"
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
-            app:backgroundTint="@color/white"
+            app:backgroundTint="@color/black"
             android:fontFamily="@font/poppins_bold"
             android:padding="10dp"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:text="I'm here" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_arrived_dropoff"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20sp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            app:backgroundTint="@color/black"
+            android:fontFamily="@font/poppins_bold"
+            android:padding="10dp"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            android:text="Done" />
 
         <LinearLayout
             android:layout_width="wrap_content"

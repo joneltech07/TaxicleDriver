@@ -138,6 +138,9 @@ public class BookingPassengerAdapter extends FirebaseRecyclerAdapter<BookingPass
                         Intent intent = new Intent(holder.passengerName.getContext(), MainActivity.class);
                         intent.putExtra("long", booking.getPickUpLongitude());
                         intent.putExtra("lat", booking.getPickUpLatitude());
+                        intent.putExtra("passId", booking.getId());
+                        intent.putExtra("dropLong", booking.getDropOffLongitude());
+                        intent.putExtra("dropLat", booking.getDropOffLatitude());
                         driverRef.removeValue();
                         v.getContext().startActivity(intent);
                     });
