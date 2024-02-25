@@ -16,8 +16,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.taxicle_driver.BookingInfo;
 import com.example.taxicle_driver.MainActivity;
 import com.example.taxicle_driver.R;
+import com.example.taxicle_driver.constructor.AcceptedBooking;
 import com.example.taxicle_driver.constructor.AvailableDriver;
 import com.example.taxicle_driver.constructor.Booking;
 import com.example.taxicle_driver.constructor.BookingPassenger;
@@ -83,22 +85,18 @@ public class BookingPassengerAdapter extends FirebaseRecyclerAdapter<BookingPass
             @SuppressLint("SetTextI18n")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Point pointPickUp, pointDropOff;
+                Point pointPickUp;
                 if (snapshot.exists()) {
                     Booking booking = snapshot.getValue(Booking.class);
                     assert booking != null;
 
-                    String addressPickUp, addressDropOff;
+                    pointPickUp = Point.fromLngLat(booking.getPickUpLongitude(), booking.getPickUpLatitude());
 
 //                  Display Pick-Up Location
-                    pointPickUp = Point.fromLngLat(booking.getPickUpLongitude(), booking.getPickUpLatitude());
-                    addressPickUp = getGeoCode(pointPickUp, holder.passengerName.getContext()).getAddressLine(0);
-                    holder.pickupLocation.setText("from: "+addressPickUp);
+                    holder.pickupLocation.setText("from: "+booking.getPickUplocationName());
 
 //                  Display Drop-Off Location
-                    pointDropOff = Point.fromLngLat(booking.getDropOffLongitude(), booking.getDropOffLatitude());
-                    addressDropOff = getGeoCode(pointDropOff, holder.passengerName.getContext()).getAddressLine(0);
-                    holder.dropoffLocation.setText("to: "+addressDropOff);
+                    holder.dropoffLocation.setText("to: "+booking.getDropOffLocationName());
 
 //                  Display Distance from driver to Pick-Up Location
 
@@ -135,14 +133,17 @@ public class BookingPassengerAdapter extends FirebaseRecyclerAdapter<BookingPass
 
                         holder.accept.setText("Booking Accepted");
 
-                        Intent intent = new Intent(holder.passengerName.getContext(), MainActivity.class);
-                        intent.putExtra("long", booking.getPickUpLongitude());
-                        intent.putExtra("lat", booking.getPickUpLatitude());
-                        intent.putExtra("passId", booking.getId());
-                        intent.putExtra("dropLong", booking.getDropOffLongitude());
-                        intent.putExtra("dropLat", booking.getDropOffLatitude());
+                        Intent intent = new Intent(holder.passengerName.getContext(), BookingInfo.class);
                         driverRef.removeValue();
                         v.getContext().startActivity(intent);
+
+//                        set book accepted
+                        AcceptedBooking acceptedBooking = new AcceptedBooking();
+                        acceptedBooking.setPassengerId(booking.getId());
+                        acceptedBooking.setDriverId(user.getUid());
+
+                        FirebaseDatabase.getInstance().getReference(AcceptedBooking.class.getSimpleName())
+                                .child(user.getUid()).setValue(acceptedBooking);
                     });
 
                 }

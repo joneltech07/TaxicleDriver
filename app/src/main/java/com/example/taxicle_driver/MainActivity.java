@@ -120,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
 
 //    Fetch Routes
     MapView mapView;
-    MaterialButton btnArrivedPickUp, btnArrivedDropOff;
-    ImageButton focusLocationBtn, navigate;
+    MaterialButton btnArrived;
+    ImageButton focusLocationBtn;
 
 
 
@@ -339,9 +339,7 @@ public class MainActivity extends AppCompatActivity {
 
             mapView = findViewById(R.id.mapview);
             focusLocationBtn = findViewById(R.id.focusLocation);
-            navigate = findViewById(R.id.navigate);
-            btnArrivedPickUp = findViewById(R.id.btn_arrived_pickup);
-            btnArrivedDropOff = findViewById(R.id.btn_arrived_dropoff);
+            btnArrived = findViewById(R.id.btn_arrived);
 
 
 
@@ -424,19 +422,12 @@ public class MainActivity extends AppCompatActivity {
             LocationComponentPlugin locationComponentPlugin = getLocationComponent(mapView);
             getGestures(mapView).addOnMoveListener(onMoveListener);
 
-            navigate.setOnClickListener(v -> {
-                Point passengerPoint = Point.fromLngLat(getIntent().getDoubleExtra("long", 0.0), getIntent().getDoubleExtra("lat", 0.0));
-                if (isGoDropOff) {
-                    passengerPoint = Point.fromLngLat(
-                            getIntent().getDoubleExtra("dropLong", 0.0),
-                            getIntent().getDoubleExtra("dropLat", 0.0)
-                    );
-                }
+            Point passengerPoint = Point.fromLngLat(
+                    getIntent().getDoubleExtra("long", 0.0),
+                    getIntent().getDoubleExtra("lat", 0.0)
+            );
 
-                fetchRoute(passengerPoint);
-            });
-
-
+            fetchRoute(passengerPoint);
 
 
 
@@ -461,26 +452,14 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
-                btnArrivedPickUp.setOnClickListener(v -> {
-                    isGoDropOff = true;
-                    HashMap<String, Object> hashMap = new HashMap<>();
-                    hashMap.put("isDriverHere", true);
+                btnArrived.setOnClickListener(v -> {
+                    onBackPressed();
 
-                    FirebaseDatabase.getInstance().getReference(Booking.class.getSimpleName())
-                            .child(Objects.requireNonNull(getIntent().getStringExtra("passId")))
-                            .updateChildren(hashMap);
-
-                    btnArrivedDropOff.setVisibility(View.VISIBLE);
                     maneuverView.setVisibility(View.GONE);
-                    navigate.setEnabled(false);
-                });
-
-                btnArrivedDropOff.setOnClickListener(v -> {
-                    btnArrivedPickUp.setVisibility(View.GONE);
                 });
             });
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
@@ -499,7 +478,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LocationEngineResult result) {
                 Location location = result.getLastLocation();
-                navigate.setEnabled(false);
                 RouteOptions.Builder builder = RouteOptions.builder();
                 Point origin = Point.fromLngLat(Objects.requireNonNull(location).getLongitude(), location.getLatitude());
 
@@ -515,12 +493,10 @@ public class MainActivity extends AppCompatActivity {
                     public void onRoutesReady(@NonNull List<NavigationRoute> list, @NonNull RouterOrigin routerOrigin) {
                         mapboxNavigation.setNavigationRoutes(list);
                         focusLocationBtn.performClick();
-                        navigate.setEnabled(true);
                     }
 
                     @Override
                     public void onFailure(@NonNull List<RouterFailure> list, @NonNull RouteOptions routeOptions) {
-                        navigate.setEnabled(true);
                         Toast.makeText(MainActivity.this, "Route request failed", Toast.LENGTH_SHORT).show();
                     }
 

@@ -36,32 +36,18 @@
 
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_arrived_pickup"
+            android:id="@+id/btn_arrived"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="20sp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="30sp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
             app:backgroundTint="@color/black"
             android:fontFamily="@font/poppins_bold"
             android:padding="10dp"
             android:textColor="@color/white"
-            android:text="I'm here" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_arrived_dropoff"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="20sp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            app:backgroundTint="@color/black"
-            android:fontFamily="@font/poppins_bold"
-            android:padding="10dp"
-            android:textColor="@color/white"
-            android:visibility="gone"
+            android:layout_centerHorizontal="true"
             android:text="Done" />
 
         <LinearLayout
@@ -74,16 +60,6 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="200dp"
             android:orientation="vertical" >
-
-            <ImageButton
-                android:id="@+id/navigate"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/baseline_near_me_24"
-                android:background="@drawable/button_round"
-                android:layout_marginBottom="20dp"
-                android:visibility="visible"
-                app:tint="@color/black" />
 
             <ImageButton
                 android:id="@+id/focusLocation"
@@ -103,6 +79,8 @@
         android:layout_height="match_parent"
         app:headerLayout="@layout/header"
         android:background="@drawable/button_rounded"
+        app:itemTextColor="@color/black"
+        app:itemIconTint="@color/black"
         app:menu="@menu/main_menu"
         android:layout_gravity="start" />
 

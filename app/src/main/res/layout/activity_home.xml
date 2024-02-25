@@ -111,6 +111,8 @@
         app:headerLayout="@layout/header"
         android:background="@drawable/button_rounded"
         app:menu="@menu/main_menu"
+        app:itemTextColor="@color/black"
+        app:itemIconTint="@color/black"
         android:layout_gravity="start" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.taxicle_driver.adapter.BookingPassengerAdapter;
+import com.example.taxicle_driver.constructor.AcceptedBooking;
 import com.example.taxicle_driver.constructor.AvailableDriver;
 import com.example.taxicle_driver.constructor.Booking;
 import com.example.taxicle_driver.constructor.BookingPassenger;
@@ -244,7 +246,8 @@ public class HomeActivity extends AppCompatActivity {
             if (item.getItemId() == R.id.account) {
                 Toast.makeText(this, "Account", Toast.LENGTH_SHORT).show();
             } else if (item.getItemId() == R.id.booking) {
-                Toast.makeText(this, "Booking", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, BookingInfo.class);
+                startActivity(intent);
             }
             return false;
         });
