@@ -3,12 +3,11 @@ package com.example.taxicle_driver.constructor;
 import java.time.LocalDateTime;
 
 public class PassengerHistory {
-    private String driverId, pickupLocation, dropoffLocation;
-    private LocalDateTime timeStamp;
+    private String driverId, pickupLocation, dropoffLocation, timeStamp;
 
     public PassengerHistory() {}
 
-    public PassengerHistory(String driverId, String pickupLocation, String dropoffLocation, LocalDateTime timeStamp) {
+    public PassengerHistory(String driverId, String pickupLocation, String dropoffLocation, String timeStamp) {
         this.driverId = driverId;
         this.pickupLocation = pickupLocation;
         this.dropoffLocation = dropoffLocation;
@@ -39,11 +38,11 @@ public class PassengerHistory {
         this.dropoffLocation = dropoffLocation;
     }
 
-    public LocalDateTime getTimeStamp() {
+    public String getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(LocalDateTime timeStamp) {
+    public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
     }
 }

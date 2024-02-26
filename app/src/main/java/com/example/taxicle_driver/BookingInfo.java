@@ -30,6 +30,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import android.Manifest;
 
 public class BookingInfo extends AppCompatActivity {
@@ -158,6 +160,15 @@ public class BookingInfo extends AppCompatActivity {
                         }
                     });
 
+            // Get the current date and time
+            LocalDateTime currentDateTime = LocalDateTime.now();
+
+            // Define the format for the string representation
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            // Format the LocalDateTime object to a string
+            String formattedDateTime = currentDateTime.format(formatter);
+
             navigatePick.setOnClickListener(v -> {
                 if (passId != null) {
                     Intent intent = new Intent(this, MainActivity.class);
@@ -184,14 +195,14 @@ public class BookingInfo extends AppCompatActivity {
                         passId,
                         pickupLocation,
                         dropoffLocation,
-                        LocalDateTime.now()
+                        formattedDateTime
                 );
 
                 PassengerHistory passengerHistory = new PassengerHistory(
                         user.getUid(),
                         pickupLocation,
                         dropoffLocation,
-                        LocalDateTime.now()
+                        formattedDateTime
                 );
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);

@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 public class DriverHistory {
 
     private String passengerId, pickupLocation, dropoffLocation;
-    private LocalDateTime timeStamp;
+    private String timeStamp;
 
     public DriverHistory() {}
 
-    public DriverHistory(String passengerId, String pickupLocation, String dropoffLocation, LocalDateTime timeStamp) {
+    public DriverHistory(String passengerId, String pickupLocation, String dropoffLocation, String timeStamp) {
         this.passengerId = passengerId;
         this.pickupLocation = pickupLocation;
         this.dropoffLocation = dropoffLocation;
@@ -40,11 +40,11 @@ public class DriverHistory {
         this.dropoffLocation = dropoffLocation;
     }
 
-    public LocalDateTime getTimeStamp() {
+    public String getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(LocalDateTime timeStamp) {
+    public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
     }
 }
