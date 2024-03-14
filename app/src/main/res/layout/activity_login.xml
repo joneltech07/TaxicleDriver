@@ -39,19 +39,27 @@
             android:textSize="13dp"
             android:inputType="textEmailAddress"/>
 
-        <EditText
-            android:id="@+id/et_password"
-            android:layout_width="300dp"
-            android:layout_height="45dp"
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
-            android:background="@drawable/edit_text_rounded"
             android:fontFamily="@font/poppins_light"
-            android:hint="Enter your Password"
-            android:inputType="textPassword"
-            android:paddingLeft="20dp"
             android:textColor="#B3000000"
             android:textColorHint="#B3000000"
-            android:textSize="13dp" />
+            android:textSize="13dp"
+            android:hint="Enter your Password"
+            app:boxBackgroundMode="none"
+            app:endIconMode="password_toggle">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_password"
+                android:layout_width="300dp"
+                android:paddingLeft="20dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/edit_text_rounded"
+                android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ProgressBar
             android:id="@+id/progress_bar"
