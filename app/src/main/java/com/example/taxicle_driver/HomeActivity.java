@@ -248,6 +248,11 @@ public class HomeActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.booking) {
                 Intent intent = new Intent(this, BookingInfo.class);
                 startActivity(intent);
+            } else if (item.getItemId() == R.id.logout) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                finish();
             }
             return false;
         });

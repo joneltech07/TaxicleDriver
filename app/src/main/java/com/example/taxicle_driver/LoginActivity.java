@@ -29,8 +29,6 @@ public class LoginActivity extends AppCompatActivity {
         View view = getWindow().getDecorView();
         makeViewFullScreen(view);
 
-        findViewById(R.id.tv_signup).setOnClickListener(v -> startActivity(new Intent(this, HomeActivity.class)));
-
         mAuth = FirebaseAuth.getInstance();
         editTextEmail = findViewById(R.id.et_email);
         editTextPassword = findViewById(R.id.et_password);
@@ -60,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         Toast.makeText(this, "Hello!, "+user.getEmail(), Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                         startActivity(intent);
                         finish();
                     } else {
