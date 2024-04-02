@@ -22,6 +22,19 @@
         android:theme="@style/Theme.TaxicleDriver"
         tools:targetApi="31">
         <activity
+            android:name=".AdvanceBookDetails"
+            android:exported="false" />
+        <!-- <receiver android:name=".AlarmReceiver"/> -->
+        <activity
+            android:name=".AdvanceBookingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DriverInfo"
+            android:exported="false" />
+        <activity
+            android:name=".AccountDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".History"
             android:exported="false" />
         <activity

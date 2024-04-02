@@ -1,6 +1,4 @@
-package com.example.taxicle_driver.constructor;
-
-import java.time.LocalDateTime;
+package com.example.taxicle_driver.Model;
 
 public class PassengerHistory {
     private String driverId, pickupLocation, dropoffLocation, timeStamp;

@@ -17,13 +17,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.taxicle_driver.BookingInfo;
-import com.example.taxicle_driver.MainActivity;
 import com.example.taxicle_driver.R;
-import com.example.taxicle_driver.constructor.AcceptedBooking;
-import com.example.taxicle_driver.constructor.AvailableDriver;
-import com.example.taxicle_driver.constructor.Booking;
-import com.example.taxicle_driver.constructor.BookingPassenger;
-import com.example.taxicle_driver.constructor.Passenger;
+import com.example.taxicle_driver.Model.AcceptedBooking;
+import com.example.taxicle_driver.Model.AvailableDriver;
+import com.example.taxicle_driver.Model.Booking;
+import com.example.taxicle_driver.Model.BookingPassenger;
+import com.example.taxicle_driver.Model.Passenger;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;

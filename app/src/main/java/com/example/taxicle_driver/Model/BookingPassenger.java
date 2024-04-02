@@ -1,4 +1,4 @@
-package com.example.taxicle_driver.constructor;
+package com.example.taxicle_driver.Model;
 
 public class BookingPassenger {
     String id;

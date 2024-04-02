@@ -2,7 +2,7 @@ package com.example.taxicle_driver.data_access_object;
 
 import androidx.annotation.NonNull;
 
-import com.example.taxicle_driver.constructor.Passenger;
+import com.example.taxicle_driver.Model.Passenger;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

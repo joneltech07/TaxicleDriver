@@ -28,13 +28,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.taxicle_driver.adapter.BookingPassengerAdapter;
-import com.example.taxicle_driver.constructor.AcceptedBooking;
-import com.example.taxicle_driver.constructor.AvailableDriver;
-import com.example.taxicle_driver.constructor.Booking;
-import com.example.taxicle_driver.constructor.BookingPassenger;
-import com.example.taxicle_driver.constructor.Driver;
+import com.example.taxicle_driver.Model.AvailableDriver;
+import com.example.taxicle_driver.Model.BookingPassenger;
+import com.example.taxicle_driver.Model.Driver;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,18 +45,13 @@ import com.mapbox.android.gestures.MoveGestureDetector;
 import com.mapbox.geojson.Point;
 import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.MapView;
-import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor;
 import com.mapbox.maps.plugin.LocationPuck2D;
-import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener;
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotation;
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 import com.mapbox.maps.plugin.gestures.OnMoveListener;
 import com.mapbox.maps.plugin.locationcomponent.LocationComponentPlugin;
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener;
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener;
 
 import java.util.HashMap;
-import java.util.function.Consumer;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -206,8 +198,6 @@ public class HomeActivity extends AppCompatActivity {
 
 
 
-
-
         switchMaterial = findViewById(R.id.status);
 
 
@@ -244,9 +234,15 @@ public class HomeActivity extends AppCompatActivity {
         drawerToggle.syncState();
         navigationView.setNavigationItemSelectedListener(item -> {
             if (item.getItemId() == R.id.account) {
-                Toast.makeText(this, "Account", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, DriverInfo.class));
             } else if (item.getItemId() == R.id.booking) {
                 Intent intent = new Intent(this, BookingInfo.class);
+                startActivity(intent);
+            } else if (item.getItemId() == R.id.history) {
+                Intent intent = new Intent(this, History.class);
+                startActivity(intent);
+            } else if(item.getItemId() == R.id.advance_book) {
+                Intent intent = new Intent(this, AdvanceBookingActivity.class);
                 startActivity(intent);
             } else if (item.getItemId() == R.id.logout) {
                 FirebaseAuth.getInstance().signOut();

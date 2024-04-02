@@ -1,25 +1,20 @@
 package com.example.taxicle_driver.adapter;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.example.taxicle_driver.LoginActivity;
 import com.example.taxicle_driver.MainActivity;
 import com.example.taxicle_driver.R;
-import com.example.taxicle_driver.constructor.Booking;
-import com.example.taxicle_driver.constructor.Passenger;
-import com.example.taxicle_driver.data_access_object.DAO;
+import com.example.taxicle_driver.Model.Booking;
+import com.example.taxicle_driver.Model.Passenger;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -27,11 +22,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.orhanobut.dialogplus.DialogPlus;
-import com.orhanobut.dialogplus.ViewHolder;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 

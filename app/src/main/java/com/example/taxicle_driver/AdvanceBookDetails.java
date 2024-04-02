@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.taxicle_driver.Model.AcceptedBooking;
+import com.example.taxicle_driver.Model.AdvanceBooking;
 import com.example.taxicle_driver.Model.Booking;
 import com.example.taxicle_driver.Model.DriverHistory;
 import com.example.taxicle_driver.Model.Passenger;
@@ -32,10 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import android.Manifest;
-
-public class BookingInfo extends AppCompatActivity {
-
+public class AdvanceBookDetails extends AppCompatActivity {
     TextView locationPick, locationDrop;
     TextView passName, passPhone, passNote;
     ImageButton navigatePick, navigateDrop;
@@ -50,11 +49,10 @@ public class BookingInfo extends AppCompatActivity {
 
     private static final int REQUEST_PHONE_CALL = 1;
     private String phoneNumber = "*143#";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_booking_info);
+        setContentView(R.layout.activity_advance_book_details);
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -73,76 +71,47 @@ public class BookingInfo extends AppCompatActivity {
         btnDone = findViewById(R.id.btn_done);
 
         try {
-            FirebaseDatabase.getInstance().getReference(AcceptedBooking.class.getSimpleName())
-                    .child(user.getUid()).addValueEventListener(new ValueEventListener() {
+            FirebaseDatabase.getInstance()
+                    .getReference("AcceptedAdvanceBooking")
+                    .child(user.getUid())
+                    .child(getIntent().getStringExtra("key"))
+                    .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                             if (snapshot.exists()) {
-                                AcceptedBooking booking = snapshot.getValue(AcceptedBooking.class);
+                                AdvanceBooking booking = snapshot.getValue(AdvanceBooking.class);
                                 assert booking != null;
-                                passId = booking.getPassengerId();
 
-                                FirebaseDatabase.getInstance().getReference(Booking.class.getSimpleName())
-                                        .child(booking.getPassengerId()).addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                passId = booking.getId();
 
-                                                if (snapshot.exists()) {
-                                                    Booking booking1 = snapshot.getValue(Booking.class);
-                                                    assert booking1 != null;
+                                locationPick.setText(booking.getPickUplocationName());
+                                locationDrop.setText(booking.getDropOffLocationName());
 
-                                                    longPick = booking1.getPickUpLongitude();
-                                                    latPick = booking1.getPickUpLatitude();
+                                longPick = booking.getPickUpLongitude();
+                                latPick = booking.getPickUpLatitude();
 
-                                                    longDrop = booking1.getDropOffLongitude();
-                                                    latDrop = booking1.getDropOffLatitude();
+                                longDrop = booking.getDropOffLongitude();
+                                latDrop = booking.getDropOffLatitude();
 
-                                                    pickupLocation = booking1.getPickUplocationName();
-                                                    dropoffLocation = booking1.getDropOffLocationName();
+                                pickupLocation = booking.getPickUplocationName();
+                                dropoffLocation = booking.getDropOffLocationName();
 
-                                                    locationPick.setText(pickupLocation);
-                                                    locationDrop.setText(dropoffLocation);
-                                                } else {
-                                                    FirebaseDatabase.getInstance().getReference(AcceptedBooking.class.getSimpleName())
-                                                            .child(user.getUid()).removeValue();
-                                                }
+                                passNote.setText(booking.getNotes());
 
-                                            }
 
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
-                                            }
-                                        });
+//                                get Passenger Info
 
                                 FirebaseDatabase.getInstance().getReference(Passenger.class.getSimpleName())
-                                        .child(passId).addValueEventListener(new ValueEventListener() {
+                                        .child(passId)
+                                        .addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                 if (snapshot.exists()) {
                                                     Passenger passenger = snapshot.getValue(Passenger.class);
-                                                    assert passenger != null;
                                                     passName.setText(passenger.getName());
                                                     passPhone.setText(passenger.getPhone());
                                                     phoneNumber = passenger.getPhone();
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
-                                            }
-                                        });
-
-                                FirebaseDatabase.getInstance().getReference(Booking.class.getSimpleName())
-                                        .child(passId).addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                if (snapshot.exists()) {
-                                                    Booking booking = snapshot.getValue(Booking.class);
-                                                    assert booking != null;
-                                                    passNote.setText(booking.getNotes());
                                                 }
                                             }
 
@@ -210,21 +179,21 @@ public class BookingInfo extends AppCompatActivity {
                 builder.setPositiveButton("Yes", (dialog, which) -> {
                     FirebaseDatabase.getInstance().getReference(DriverHistory.class.getSimpleName())
                             .child(user.getUid()).push().setValue(driverHistory);
-                    FirebaseDatabase.getInstance().getReference(AcceptedBooking.class.getSimpleName())
-                            .child(user.getUid()).removeValue();
+                    FirebaseDatabase.getInstance().getReference("AcceptedAdvanceBooking")
+                            .child(user.getUid()).child(getIntent().getStringExtra("key")).removeValue();
 
                     FirebaseDatabase.getInstance().getReference(PassengerHistory.class.getSimpleName())
                             .child(passId).push().setValue(passengerHistory);
-                    FirebaseDatabase.getInstance().getReference(Booking.class.getSimpleName())
-                            .child(passId).removeValue();
+                    FirebaseDatabase.getInstance().getReference("PassengerAdvanceBooking")
+                            .child(passId).child(getIntent().getStringExtra("key")).removeValue();
 
-                    Toast.makeText(BookingInfo.this, "Transport has successfully done", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AdvanceBookDetails.this, "Transport has successfully done", Toast.LENGTH_SHORT).show();
                     onBackPressed();
                 });
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(BookingInfo.this, "You clicked No", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AdvanceBookDetails.this, "You clicked No", Toast.LENGTH_SHORT).show();
                     }
                 });
                 AlertDialog dialog = builder.create();
@@ -237,12 +206,10 @@ public class BookingInfo extends AppCompatActivity {
 
         Button buttonCall = findViewById(R.id.button_call);
         buttonCall.setOnClickListener(v -> makePhoneCall());
-
     }
-
     private void makePhoneCall() {
-        if (ContextCompat.checkSelfPermission(BookingInfo.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(BookingInfo.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
+        if (ContextCompat.checkSelfPermission(AdvanceBookDetails.this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(AdvanceBookDetails.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
         } else {
             String dial = "tel:" + phoneNumber;
             startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));

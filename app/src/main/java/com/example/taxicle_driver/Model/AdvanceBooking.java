@@ -1,27 +1,25 @@
-package com.example.taxicle_driver.constructor;
+package com.example.taxicle_driver.Model;
 
-import java.util.Date;
-
-public class Booking {
-    public String id, pickUplocationName, dropOffLocationName, notes;
-    public boolean isAccepted;
-    public Date date;
+public class AdvanceBooking {
+    public String id, pickUplocationName, dropOffLocationName, notes, time;
     public double pickUpLongitude, pickUpLatitude, dropOffLongitude, dropOffLatitude;
+    public boolean isAccepted;
 
-    public Booking() {}
+    public AdvanceBooking() {}
 
-    public Booking(String id, String pickUplocationName, String dropOffLocationName, String notes, boolean isAccepted, Date date, double pickUpLongitude, double pickUpLatitude, double dropOffLongitude, double dropOffLatitude) {
+    public AdvanceBooking(String id, String pickUplocationName, String dropOffLocationName, String notes, String time, double pickUpLongitude, double pickUpLatitude, double dropOffLongitude, double dropOffLatitude, boolean isAccepted) {
         this.id = id;
         this.pickUplocationName = pickUplocationName;
         this.dropOffLocationName = dropOffLocationName;
         this.notes = notes;
-        this.date = date;
+        this.time = time;
         this.pickUpLongitude = pickUpLongitude;
         this.pickUpLatitude = pickUpLatitude;
         this.dropOffLongitude = dropOffLongitude;
         this.dropOffLatitude = dropOffLatitude;
         this.isAccepted = isAccepted;
     }
+
 
     public String getId() {
         return id;
@@ -39,13 +37,12 @@ public class Booking {
         this.notes = notes;
     }
 
-
     public boolean isAccepted() {
         return isAccepted;
     }
 
-    public void setAccepted(boolean accepted) {
-        isAccepted = accepted;
+    public void setAccepted(boolean isAccepted) {
+        this.isAccepted = isAccepted;
     }
 
     public String getPickUplocationName() {
@@ -56,12 +53,12 @@ public class Booking {
         this.pickUplocationName = pickUplocationName;
     }
 
-    public Date getDate() {
-        return date;
+    public String getTime() {
+        return time;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public double getPickUpLongitude() {
