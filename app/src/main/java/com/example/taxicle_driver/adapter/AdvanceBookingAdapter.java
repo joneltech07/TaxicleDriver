@@ -1,10 +1,10 @@
 package com.example.taxicle_driver.adapter;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.taxicle_driver.AdvanceBookDetails;
 import com.example.taxicle_driver.Model.AdvanceBooking;
 import com.example.taxicle_driver.Model.Passenger;
 import com.example.taxicle_driver.R;
@@ -151,6 +150,19 @@ public class AdvanceBookingAdapter extends FirebaseRecyclerAdapter<AdvanceBookin
                 // Show notification
                 showNotification(holder.itemView.getContext(), "Booking accepted for time: " + model.getTime());
                 Toast.makeText(holder.tvPickUp.getContext(), "Accepted.", Toast.LENGTH_SHORT).show();
+
+                Dialog dialog = new Dialog(holder.tvPickUp.getContext());
+                dialog.setContentView(R.layout.notif_driver);
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                dialog.setCancelable(true);
+
+                Button ok = dialog.findViewById(R.id.btn_ok);
+                ok.setOnClickListener(v -> {
+                    dialog.dismiss();
+                });
+
+
+                dialog.show();
             });
             builder.setNegativeButton("no", ((dialogInterface, i) -> {
                 Toast.makeText(holder.tvPickUp.getContext(), "Aborted.", Toast.LENGTH_SHORT).show();
