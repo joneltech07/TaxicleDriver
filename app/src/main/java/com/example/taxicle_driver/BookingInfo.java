@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.taxicle_driver.Model.AcceptedBooking;
 import com.example.taxicle_driver.Model.Booking;
 import com.example.taxicle_driver.Model.DriverHistory;
+import com.example.taxicle_driver.Model.Notification;
 import com.example.taxicle_driver.Model.Passenger;
 import com.example.taxicle_driver.Model.PassengerHistory;
 import com.google.firebase.auth.FirebaseAuth;
@@ -171,6 +172,9 @@ public class BookingInfo extends AppCompatActivity {
 
             navigatePick.setOnClickListener(v -> {
                 if (passId != null) {
+                    FirebaseDatabase.getInstance().getReference(Notification.class.getSimpleName())
+                            .child(passId).child("startPick").setValue(true);
+
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("passId", passId);
                     intent.putExtra("long", longPick);
@@ -181,6 +185,7 @@ public class BookingInfo extends AppCompatActivity {
 
             navigateDrop.setOnClickListener(v -> {
                 if (passId != null) {
+
                     btnDone.setVisibility(View.VISIBLE);
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("passId", passId);
@@ -217,6 +222,10 @@ public class BookingInfo extends AppCompatActivity {
                             .child(passId).push().setValue(passengerHistory);
                     FirebaseDatabase.getInstance().getReference(Booking.class.getSimpleName())
                             .child(passId).removeValue();
+
+
+                    FirebaseDatabase.getInstance().getReference(Notification.class.getSimpleName())
+                            .child(passId).child("dropped").setValue(true);
 
                     Toast.makeText(BookingInfo.this, "Transport has successfully done", Toast.LENGTH_SHORT).show();
                     onBackPressed();

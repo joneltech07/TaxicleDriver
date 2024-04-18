@@ -22,6 +22,7 @@ import com.example.taxicle_driver.Model.AcceptedBooking;
 import com.example.taxicle_driver.Model.AdvanceBooking;
 import com.example.taxicle_driver.Model.Booking;
 import com.example.taxicle_driver.Model.DriverHistory;
+import com.example.taxicle_driver.Model.Notification;
 import com.example.taxicle_driver.Model.Passenger;
 import com.example.taxicle_driver.Model.PassengerHistory;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +34,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AdvanceBookDetails extends AppCompatActivity {
     TextView locationPick, locationDrop;
@@ -140,6 +143,10 @@ public class AdvanceBookDetails extends AppCompatActivity {
 
             navigatePick.setOnClickListener(v -> {
                 if (passId != null) {
+
+                    FirebaseDatabase.getInstance().getReference(Notification.class.getSimpleName())
+                            .child(passId).child("startPick").setValue(true);
+
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("passId", passId);
                     intent.putExtra("long", longPick);
@@ -150,6 +157,7 @@ public class AdvanceBookDetails extends AppCompatActivity {
 
             navigateDrop.setOnClickListener(v -> {
                 if (passId != null) {
+
                     btnDone.setVisibility(View.VISIBLE);
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("passId", passId);
@@ -186,6 +194,9 @@ public class AdvanceBookDetails extends AppCompatActivity {
                             .child(passId).push().setValue(passengerHistory);
                     FirebaseDatabase.getInstance().getReference("PassengerAdvanceBooking")
                             .child(passId).child(getIntent().getStringExtra("key")).removeValue();
+
+                    FirebaseDatabase.getInstance().getReference(Notification.class.getSimpleName())
+                            .child(passId).child("dropped").setValue(true);
 
                     Toast.makeText(AdvanceBookDetails.this, "Transport has successfully done", Toast.LENGTH_SHORT).show();
                     onBackPressed();
