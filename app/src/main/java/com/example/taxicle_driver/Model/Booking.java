@@ -4,13 +4,13 @@ import java.util.Date;
 
 public class Booking {
     public String id, pickUplocationName, dropOffLocationName, notes;
-    public boolean isAccepted;
     public Date date;
-    public double pickUpLongitude, pickUpLatitude, dropOffLongitude, dropOffLatitude;
+    public double pickUpLongitude, pickUpLatitude, dropOffLongitude, dropOffLatitude, totalFare;
+    public boolean isAccepted;
 
     public Booking() {}
 
-    public Booking(String id, String pickUplocationName, String dropOffLocationName, String notes, boolean isAccepted, Date date, double pickUpLongitude, double pickUpLatitude, double dropOffLongitude, double dropOffLatitude) {
+    public Booking(String id, String pickUplocationName, String dropOffLocationName, String notes, Date date, double pickUpLongitude, double pickUpLatitude, double dropOffLongitude, double totalFare, double dropOffLatitude, boolean isAccepted) {
         this.id = id;
         this.pickUplocationName = pickUplocationName;
         this.dropOffLocationName = dropOffLocationName;
@@ -21,7 +21,9 @@ public class Booking {
         this.dropOffLongitude = dropOffLongitude;
         this.dropOffLatitude = dropOffLatitude;
         this.isAccepted = isAccepted;
+        this.totalFare = totalFare;
     }
+
 
     public String getId() {
         return id;
@@ -39,13 +41,20 @@ public class Booking {
         this.notes = notes;
     }
 
+    public double getTotalFare() {
+        return totalFare;
+    }
+
+    public void setTotalFare(double totalFare) {
+        this.totalFare = totalFare;
+    }
 
     public boolean isAccepted() {
         return isAccepted;
     }
 
-    public void setAccepted(boolean accepted) {
-        isAccepted = accepted;
+    public void setAccepted(boolean isAccepted) {
+        this.isAccepted = isAccepted;
     }
 
     public String getPickUplocationName() {

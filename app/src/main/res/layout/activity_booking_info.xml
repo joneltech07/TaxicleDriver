@@ -130,7 +130,8 @@
                 android:layout_marginLeft="10dp"
                 android:src="@drawable/baseline_near_me_24"
                 android:background="@drawable/button_round"
-                app:tint="@color/black" />
+                app:tint="@color/black"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <Button

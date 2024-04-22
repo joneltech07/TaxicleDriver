@@ -46,8 +46,12 @@ public class BookingInfo extends AppCompatActivity {
     Double longPick, latPick, longDrop, latDrop;
     String passId, pickupLocation, dropoffLocation;
 
+    double totalFare;
+
     FirebaseAuth auth;
     FirebaseUser user;
+
+    boolean hasPicked;
 
     private static final int REQUEST_PHONE_CALL = 1;
     private String phoneNumber = "*143#";
@@ -92,6 +96,8 @@ public class BookingInfo extends AppCompatActivity {
                                                 if (snapshot.exists()) {
                                                     Booking booking1 = snapshot.getValue(Booking.class);
                                                     assert booking1 != null;
+
+                                                    totalFare = booking1.getTotalFare();
 
                                                     longPick = booking1.getPickUpLongitude();
                                                     latPick = booking1.getPickUpLatitude();
@@ -180,10 +186,13 @@ public class BookingInfo extends AppCompatActivity {
                     intent.putExtra("long", longPick);
                     intent.putExtra("lat", latPick);
                     startActivity(intent);
+
+                    navigateDrop.setVisibility(View.VISIBLE);
                 }
             });
 
             navigateDrop.setOnClickListener(v -> {
+
                 if (passId != null) {
 
                     btnDone.setVisibility(View.VISIBLE);
@@ -200,14 +209,16 @@ public class BookingInfo extends AppCompatActivity {
                         passId,
                         pickupLocation,
                         dropoffLocation,
-                        formattedDateTime
+                        formattedDateTime,
+                        totalFare
                 );
 
                 PassengerHistory passengerHistory = new PassengerHistory(
                         user.getUid(),
                         pickupLocation,
                         dropoffLocation,
-                        formattedDateTime
+                        formattedDateTime,
+                        totalFare
                 );
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);

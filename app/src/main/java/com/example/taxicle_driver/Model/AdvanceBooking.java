@@ -5,9 +5,11 @@ public class AdvanceBooking {
     public double pickUpLongitude, pickUpLatitude, dropOffLongitude, dropOffLatitude;
     public boolean isAccepted;
 
+    public double totalFare;
+
     public AdvanceBooking() {}
 
-    public AdvanceBooking(String id, String pickUplocationName, String dropOffLocationName, String notes, String time, double pickUpLongitude, double pickUpLatitude, double dropOffLongitude, double dropOffLatitude, boolean isAccepted) {
+    public AdvanceBooking(String id, String pickUplocationName, double totalFare, String dropOffLocationName, String notes, String time, double pickUpLongitude, double pickUpLatitude, double dropOffLongitude, double dropOffLatitude, boolean isAccepted) {
         this.id = id;
         this.pickUplocationName = pickUplocationName;
         this.dropOffLocationName = dropOffLocationName;
@@ -18,6 +20,7 @@ public class AdvanceBooking {
         this.dropOffLongitude = dropOffLongitude;
         this.dropOffLatitude = dropOffLatitude;
         this.isAccepted = isAccepted;
+        this.totalFare = totalFare;
     }
 
 
@@ -27,6 +30,14 @@ public class AdvanceBooking {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public double getTotalFare() {
+        return totalFare;
+    }
+
+    public void setTotalFare(double totalFare) {
+        this.totalFare = totalFare;
     }
 
     public String getNotes() {

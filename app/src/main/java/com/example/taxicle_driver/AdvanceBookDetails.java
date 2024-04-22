@@ -46,6 +46,7 @@ public class AdvanceBookDetails extends AppCompatActivity {
 
     Double longPick, latPick, longDrop, latDrop;
     String passId, pickupLocation, dropoffLocation;
+    double totalFare;
 
     FirebaseAuth auth;
     FirebaseUser user;
@@ -87,6 +88,8 @@ public class AdvanceBookDetails extends AppCompatActivity {
                                 assert booking != null;
 
                                 passId = booking.getId();
+
+                                totalFare = booking.getTotalFare();
 
                                 locationPick.setText(booking.getPickUplocationName());
                                 locationDrop.setText(booking.getDropOffLocationName());
@@ -172,14 +175,16 @@ public class AdvanceBookDetails extends AppCompatActivity {
                         passId,
                         pickupLocation,
                         dropoffLocation,
-                        formattedDateTime
+                        formattedDateTime,
+                        totalFare
                 );
 
                 PassengerHistory passengerHistory = new PassengerHistory(
                         user.getUid(),
                         pickupLocation,
                         dropoffLocation,
-                        formattedDateTime
+                        formattedDateTime,
+                        totalFare
                 );
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);

@@ -60,6 +60,7 @@ public class HistoryAdapter extends FirebaseRecyclerAdapter<DriverHistory, Histo
 
         holder.pickupLocation.setText(model.getPickupLocation());
         holder.dropoffLocation.setText(model.getDropoffLocation());
+        holder.totalFare.setText(String.format("₱%s", model.getTotalFare()));
 
         holder.deleteBtn.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(holder.pickupLocation.getContext());
@@ -87,7 +88,7 @@ public class HistoryAdapter extends FirebaseRecyclerAdapter<DriverHistory, Histo
 
     class myViewHolder extends RecyclerView.ViewHolder {
 
-        TextView passengerName, pickupLocation, dropoffLocation;
+        TextView passengerName, pickupLocation, dropoffLocation, totalFare;
         Button deleteBtn;
 
         public myViewHolder(@NonNull View itemView) {
@@ -96,6 +97,7 @@ public class HistoryAdapter extends FirebaseRecyclerAdapter<DriverHistory, Histo
             passengerName = itemView.findViewById(R.id.tv_passenger_name);
             pickupLocation = itemView.findViewById(R.id.tv_pickup_location);
             dropoffLocation = itemView.findViewById(R.id.tv_dropoff_location);
+            totalFare = itemView.findViewById(R.id.tv_total_fare);
 
             deleteBtn = itemView.findViewById(R.id.btnDelete);
 

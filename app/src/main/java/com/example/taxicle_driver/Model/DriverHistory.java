@@ -5,13 +5,16 @@ public class DriverHistory {
     private String passengerId, pickupLocation, dropoffLocation;
     private String timeStamp;
 
+    double totalFare;
+
     public DriverHistory() {}
 
-    public DriverHistory(String passengerId, String pickupLocation, String dropoffLocation, String timeStamp) {
+    public DriverHistory(String passengerId, String pickupLocation, String dropoffLocation, String timeStamp, double totalFare) {
         this.passengerId = passengerId;
         this.pickupLocation = pickupLocation;
         this.dropoffLocation = dropoffLocation;
         this.timeStamp = timeStamp;
+        this.totalFare = totalFare;
     }
 
     public String getPassengerId() {
@@ -20,6 +23,14 @@ public class DriverHistory {
 
     public void setPassengerId(String passengerId) {
         this.passengerId = passengerId;
+    }
+
+    public double getTotalFare() {
+        return totalFare;
+    }
+
+    public void setTotalFare(double totalFare) {
+        this.totalFare = totalFare;
     }
 
     public String getPickupLocation() {

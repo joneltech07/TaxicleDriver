@@ -127,6 +127,7 @@ public class BookingPassengerAdapter extends FirebaseRecyclerAdapter<BookingPass
                         hashMap.put("accepted", true);
                         hashMap.put("driver", user.getUid());
 
+                        // Booking -> PassengerId
                         FirebaseDatabase.getInstance().getReference(Booking.class.getSimpleName())
                                 .child(model.getId()).updateChildren(hashMap);
 
