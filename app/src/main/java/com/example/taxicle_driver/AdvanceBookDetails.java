@@ -91,6 +91,8 @@ public class AdvanceBookDetails extends AppCompatActivity {
 
                                 totalFare = booking.getTotalFare();
 
+                                ((TextView)findViewById(R.id.tv_total_fare)).setText(Double.toString(totalFare));
+
                                 locationPick.setText(booking.getPickUplocationName());
                                 locationDrop.setText(booking.getDropOffLocationName());
 
@@ -148,13 +150,15 @@ public class AdvanceBookDetails extends AppCompatActivity {
                 if (passId != null) {
 
                     FirebaseDatabase.getInstance().getReference(Notification.class.getSimpleName())
-                            .child(passId).child("startPick").setValue(true);
+                            .child(passId).child("advance").child("startPick").setValue(true);
 
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("passId", passId);
                     intent.putExtra("long", longPick);
                     intent.putExtra("lat", latPick);
                     startActivity(intent);
+
+                    navigateDrop.setVisibility(View.VISIBLE);
                 }
             });
 
@@ -201,17 +205,12 @@ public class AdvanceBookDetails extends AppCompatActivity {
                             .child(passId).child(getIntent().getStringExtra("key")).removeValue();
 
                     FirebaseDatabase.getInstance().getReference(Notification.class.getSimpleName())
-                            .child(passId).child("dropped").setValue(true);
+                            .child(passId).child("advance").child("dropped").setValue(true);
 
                     Toast.makeText(AdvanceBookDetails.this, "Transport has successfully done", Toast.LENGTH_SHORT).show();
                     onBackPressed();
                 });
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(AdvanceBookDetails.this, "You clicked No", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                builder.setNegativeButton("No", (dialog, which) -> Toast.makeText(AdvanceBookDetails.this, "You clicked No", Toast.LENGTH_SHORT).show());
                 AlertDialog dialog = builder.create();
                 dialog.show();
             });

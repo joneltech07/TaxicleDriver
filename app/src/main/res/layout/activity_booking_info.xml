@@ -134,6 +134,32 @@
                 android:visibility="gone"/>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/location_bg"
+            android:backgroundTint="#9F9F9F"
+            android:gravity="center"
+            android:padding="10dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_bold"
+                android:textColor="@color/black"
+                android:text="Total Fare: ₱"/>
+
+            <TextView
+                android:id="@+id/tv_total_fare"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_light"
+                android:textColor="@color/black"
+                android:text="0.00"/>
+
+        </LinearLayout>
+
         <Button
             android:id="@+id/button_call"
             android:layout_width="wrap_content"

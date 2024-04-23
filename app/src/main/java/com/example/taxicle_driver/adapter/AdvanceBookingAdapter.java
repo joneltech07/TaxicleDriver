@@ -79,6 +79,7 @@ public class AdvanceBookingAdapter extends FirebaseRecyclerAdapter<AdvanceBookin
     protected void onBindViewHolder(@NonNull myViewHolder holder, final int position, @NonNull AdvanceBooking model) {
         holder.tvPickUp.setText("Pick-up: " + model.getPickUplocationName());
         holder.tvDropOff.setText("Drop-off: " + model.getDropOffLocationName());
+        holder.tvTotalFare.setText("Total Fare: ₱"+model.getTotalFare());
         holder.tvTime.setText(model.getTime());
 
 
@@ -114,6 +115,8 @@ public class AdvanceBookingAdapter extends FirebaseRecyclerAdapter<AdvanceBookin
         booking.setDropOffLatitude(model.dropOffLatitude);
         booking.setDropOffLongitude(model.dropOffLongitude);
         booking.setDropOffLocationName(model.dropOffLocationName);
+
+        booking.setTotalFare(model.getTotalFare());
 
 
         holder.btnCancel.setOnClickListener(view -> {
@@ -179,7 +182,7 @@ public class AdvanceBookingAdapter extends FirebaseRecyclerAdapter<AdvanceBookin
     }
 
     class myViewHolder extends RecyclerView.ViewHolder {
-        TextView tvPassenger, tvPickUp, tvDropOff, tvTime;
+        TextView tvPassenger, tvPickUp, tvDropOff, tvTime, tvTotalFare;
 
         Button btnCancel;
 
@@ -189,6 +192,7 @@ public class AdvanceBookingAdapter extends FirebaseRecyclerAdapter<AdvanceBookin
             tvPickUp = (TextView) itemView.findViewById(R.id.tv_pickup);
             tvDropOff = (TextView) itemView.findViewById(R.id.tv_dropoff);
             tvTime = itemView.findViewById(R.id.tv_datetime);
+            tvTotalFare = itemView.findViewById(R.id.tv_total_fare);
             btnCancel = itemView.findViewById(R.id.btn_cancel);
         }
     }

@@ -40,6 +40,7 @@ public class AcceptedAdvanceBookingAdapter extends FirebaseRecyclerAdapter<Advan
     protected void onBindViewHolder(@NonNull myViewHolder holder, final int position, @NonNull AdvanceBooking model) {
         holder.tvPickUp.setText("Pick-up: " + model.getPickUplocationName());
         holder.tvDropOff.setText("Drop-off: " + model.getDropOffLocationName());
+        holder.tvTotalFare.setText("Total Fare: ₱"+model.getTotalFare());
         holder.tvTime.setText(model.getTime());
 
         FirebaseDatabase.getInstance().getReference(Passenger.class.getSimpleName())
@@ -115,7 +116,7 @@ public class AcceptedAdvanceBookingAdapter extends FirebaseRecyclerAdapter<Advan
     }
 
     class myViewHolder extends RecyclerView.ViewHolder {
-        TextView tvPassenger, tvPickUp, tvDropOff, tvTime;
+        TextView tvPassenger, tvPickUp, tvDropOff, tvTime, tvTotalFare;
 
         Button btnCancel, btnShow;
 
@@ -126,6 +127,7 @@ public class AcceptedAdvanceBookingAdapter extends FirebaseRecyclerAdapter<Advan
             tvDropOff = (TextView) itemView.findViewById(R.id.tv_dropoff);
             tvTime = itemView.findViewById(R.id.tv_datetime);
             btnCancel = itemView.findViewById(R.id.btn_cancel);
+            tvTotalFare = itemView.findViewById(R.id.tv_total_fare);
             btnShow = itemView.findViewById(R.id.btn_show_more);
         }
     }

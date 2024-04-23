@@ -99,6 +99,8 @@ public class BookingInfo extends AppCompatActivity {
 
                                                     totalFare = booking1.getTotalFare();
 
+                                                    ((TextView)findViewById(R.id.tv_total_fare)).setText(Double.toString(totalFare));
+
                                                     longPick = booking1.getPickUpLongitude();
                                                     latPick = booking1.getPickUpLatitude();
 
@@ -179,7 +181,7 @@ public class BookingInfo extends AppCompatActivity {
             navigatePick.setOnClickListener(v -> {
                 if (passId != null) {
                     FirebaseDatabase.getInstance().getReference(Notification.class.getSimpleName())
-                            .child(passId).child("startPick").setValue(true);
+                            .child(passId).child("normal").child("startPick").setValue(true);
 
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("passId", passId);
@@ -236,7 +238,7 @@ public class BookingInfo extends AppCompatActivity {
 
 
                     FirebaseDatabase.getInstance().getReference(Notification.class.getSimpleName())
-                            .child(passId).child("dropped").setValue(true);
+                            .child(passId).child("normal").child("dropped").setValue(true);
 
                     Toast.makeText(BookingInfo.this, "Transport has successfully done", Toast.LENGTH_SHORT).show();
                     onBackPressed();

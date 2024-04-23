@@ -40,6 +40,12 @@
                 android:text="Drop-off Location" />
 
             <TextView
+                android:id="@+id/tv_total_fare"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Total Fare" />
+
+            <TextView
                 android:id="@+id/tv_datetime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
